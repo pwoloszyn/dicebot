@@ -6,6 +6,19 @@ package bananaland.dicebot.dice;
 public class ConstantDiceTerm extends DiceTerm {
     // TODO: Implement this class.
 
+    /**
+     * @param text text representation of the dice term
+     * @return true if the text corresponds to a ConstantDiceTerm
+     */
+    public static boolean validate(String text) {
+        try {
+            Double.parseDouble(text);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+        return true;
+    }
+
     public double[] evaluate() {
         return new double[0];
     }
