@@ -11,6 +11,7 @@ public class ConstantDiceTerm extends DiceTerm {
      * @return true if the text corresponds to a ConstantDiceTerm
      */
     public static boolean validate(String text) {
+        // TODO: Solve this problem without exception jank
         try {
             Double.parseDouble(text);
         } catch (NumberFormatException e) {
