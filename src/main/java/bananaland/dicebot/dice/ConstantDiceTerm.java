@@ -4,7 +4,11 @@ package bananaland.dicebot.dice;
  * Handles dice terms of the form < valid java.lang.Double >
  */
 public class ConstantDiceTerm extends DiceTerm {
-    // TODO: Implement this class.
+    private double c;
+
+    public ConstantDiceTerm(double c) {
+        this.c = c;
+    }
 
     /**
      * @param text text representation of the dice term
@@ -21,14 +25,14 @@ public class ConstantDiceTerm extends DiceTerm {
     }
 
     public double[] evaluate() {
-        return new double[0];
+        return new double[] {c};
     }
 
     public double evaluateTotal() {
-        return 0;
+        return c;
     }
 
     public String toString() {
-        return null;
+        return Double.toString(c);
     }
 }
