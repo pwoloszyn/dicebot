@@ -6,8 +6,8 @@ package bananaland.dicebot.dice;
 public class ConstantDiceTerm extends DiceTerm {
     private double c;
 
-    public ConstantDiceTerm(double c) {
-        this.c = c;
+    public ConstantDiceTerm(String text) {
+        this.c = Double.parseDouble(text);
     }
 
     /**
