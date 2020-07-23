@@ -8,7 +8,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 public class Bot extends ListenerAdapter {
 	
 	//Some cahnges will happen
-	int x = 1 + 5 + 3;
+	int x = 5 + 5 + 3;
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
