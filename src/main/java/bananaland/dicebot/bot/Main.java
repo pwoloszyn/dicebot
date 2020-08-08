@@ -8,6 +8,7 @@ import javax.security.auth.login.LoginException;
 public class Main {
     public static void main(String[] args) throws LoginException {
         JDABuilder builder = JDABuilder.createDefault(Secret.TOKEN);
+        
         Bot bot = new Bot();
         builder.addEventListeners(bot);
         builder.setActivity(Activity.playing("Type !roll <dice expression>"));
