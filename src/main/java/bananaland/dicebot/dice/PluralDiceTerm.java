@@ -5,8 +5,16 @@ package bananaland.dicebot.dice;
  */
 public class PluralDiceTerm extends DiceTerm {
     // TODO: Implement this class.
+	
+	private String dice_term;
+	private double[] evaluated_expression;
+	
+	public PluralDiceTerm(String dice_term) {
+		this.dice_term = dice_term;
+	}
 
     public double[] evaluate() {
+    	
         return new double[0];
     }
 
