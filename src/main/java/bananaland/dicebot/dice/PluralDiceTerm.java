@@ -7,7 +7,7 @@ public class PluralDiceTerm extends DiceTerm {
     // TODO: Implement this class.
 	
 	private String dice_term;
-	private double[] evaluated_expression;
+	private double[] dice_term_values;
 	
 	public PluralDiceTerm(String dice_term) {
 		this.dice_term = dice_term;
