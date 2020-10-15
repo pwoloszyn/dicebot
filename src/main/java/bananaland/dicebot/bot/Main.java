@@ -18,7 +18,7 @@ public class Main {
         builder.build();
         */
     	
-    	String inp = "2d8+3-11+(3d6dl1 * 2)";
+    	String inp = "1+2d8+3-11+(3d6dl1*2)";
     	
     	Tokenizer t = new Tokenizer();
     	t.tokenize(inp.replace(" ", ""));
