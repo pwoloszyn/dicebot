@@ -136,12 +136,8 @@ public class Parser {
 	private Expression argument() {
 		if(lookahead.token == Token.DICE_ADV) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+dl[1-9]+
-			
-			// PLACEHOLDER
-			Expression expr = new ConstantExpression(1);
-			
-			System.out.println("LOOK HERE ADV: " + lookahead.sequence);
-			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+
+			Expression expr = new DiceRollAdvExpression(lookahead.sequence);
 			
 			nextToken();
 			return expr;
@@ -150,11 +146,7 @@ public class Parser {
 		} else if(lookahead.token == Token.DICE_DISADV) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+dh[1-9]+
 			
-			// PLACEHOLDER
-			Expression expr = new ConstantExpression(1);
-			
-			System.out.println("LOOK HERE DISADV: " + lookahead.sequence);
-			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+			Expression expr = new DiceRollDisadvExpression(lookahead.sequence);
 			
 			nextToken();
 			return expr;
@@ -163,11 +155,7 @@ public class Parser {
 		} else if(lookahead.token == Token.DICE) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+
 			
-			// PLACEHOLDER
-			Expression expr = new ConstantExpression(1);
-			
-			System.out.println("LOOK HERE NORMAL: " + lookahead.sequence);
-			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+			Expression expr = new DiceRollExpression(lookahead.sequence);
 			
 			nextToken();
 			return expr;

@@ -19,9 +19,9 @@ public class Tokenizer {
 		add("\\)", 6);
 		
 		// Dice Terms
-				add("[0-9]+d[0-9]+dl1", 21);
-				add("[0-9]+d[0-9]+dh1", 22);
-				add("[0-9]+d[0-9]+", 23);
+		add("[0-9]+d[0-9]+dl1", 21);
+		add("[0-9]+d[0-9]+dh1", 22);
+		add("[0-9]+d[0-9]+", 23);
 		
 		add("[0-9]+", 7);
 		
@@ -44,7 +44,6 @@ public class Tokenizer {
 					String tok = m.group().trim();
 					tokens.add(new Token(info.token, tok));
 					s = m.replaceFirst("");
-					System.out.println(tok); // printout, to be removed later
 					break;
 				}
 			}

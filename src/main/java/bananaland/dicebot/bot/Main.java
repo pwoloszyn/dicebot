@@ -20,7 +20,7 @@ public class Main {
         builder.build();
         */
     	
-    	String inp = "1+2d8+3-13+(3d6dh1*2)";
+    	String inp = "1+2d8+3+13+(4d6dl1*2)+2d10dh1";
     	
     	Tokenizer t = new Tokenizer();
     	t.tokenize(inp.replace(" ", ""));
