@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.util.LinkedList;
 
 import bananaland.dicebot.parser.expressions.*;
+import bananaland.dicebot.parser.expressions.dice.*;
 import bananaland.dicebot.tokenizer.Token;
 
 public class Parser {
@@ -134,19 +135,27 @@ public class Parser {
 	
 	private Expression argument() {
 		if(lookahead.token == Token.DICE_ADV) {
-			// Evaluates expressions of the form: [0-9]+d[0-9]+dh[1-9]+
+			// Evaluates expressions of the form: [0-9]+d[0-9]+dl[1-9]+
 			
 			// PLACEHOLDER
 			Expression expr = new ConstantExpression(1);
+			
+			System.out.println("LOOK HERE ADV: " + lookahead.sequence);
+			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+			
 			nextToken();
 			return expr;
 			
 			
 		} else if(lookahead.token == Token.DICE_DISADV) {
-			// Evaluates expressions of the form: [0-9]+d[0-9]+dl[1-9]+
+			// Evaluates expressions of the form: [0-9]+d[0-9]+dh[1-9]+
 			
 			// PLACEHOLDER
 			Expression expr = new ConstantExpression(1);
+			
+			System.out.println("LOOK HERE DISADV: " + lookahead.sequence);
+			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+			
 			nextToken();
 			return expr;
 			
@@ -156,6 +165,10 @@ public class Parser {
 			
 			// PLACEHOLDER
 			Expression expr = new ConstantExpression(1);
+			
+			System.out.println("LOOK HERE NORMAL: " + lookahead.sequence);
+			//Expression exprz = new DiceRollExpression(lookahead.sequence);
+			
 			nextToken();
 			return expr;
 			
