@@ -31,7 +31,7 @@ public class Tokenizer {
 		tokenInfos.add(new TokenInfo(Pattern.compile("^(" + regex + ")"), token));
 	}
 
-	public void tokenize(String str) {
+	public boolean tokenize(String str) {
 		String s = new String(str);
 		tokens.clear();
 
@@ -48,8 +48,9 @@ public class Tokenizer {
 				}
 			}
 			if (!match)
-				throw new RuntimeException("Unexpected character is input: " + s);
+				return false;
 		}
+		return true;
 	}
 	
 	public LinkedList<Token> getTokens() {

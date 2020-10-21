@@ -10,10 +10,20 @@ import bananaland.dicebot.tokenizer.Token;
 public class Parser {
 	LinkedList<Token> tokens;
 	Token lookahead;
+	private LinkedList<String> output_string;
 	
+	public String getOutput_string() {
+		StringBuilder sb = new StringBuilder();
+		for(String s : output_string)
+			sb.append(s + " ");
+		return sb.toString();
+	}
+
 	public Expression parse(LinkedList<Token> tokens) {
 		this.tokens = (LinkedList<Token>) tokens.clone();
 		lookahead = this.tokens.getFirst();
+		
+		output_string = new LinkedList<String>();
 		
 		Expression expr = expression();
 		
@@ -40,12 +50,17 @@ public class Parser {
 	
 	private Expression sumOp(Expression expr) {
 		if(lookahead.token == Token.PLUSMINUS) {
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
+			
 			// sum_op -> PLUSMINUS
 			AdditionExpression sum;
-			if(expr.getType() == Expression.ADDITION)
+			if(expr.getType() == Expression.ADDITION) {
 				sum = (AdditionExpression) expr;
-			else
+			}else {
 				sum = new AdditionExpression(expr, true);
+			}
 			boolean positive = lookahead.sequence.equals("+");
 			nextToken();
 			Expression t = term();
@@ -59,6 +74,7 @@ public class Parser {
 	
 	private Expression signedTerm() {
 		if(lookahead.token == Token.PLUSMINUS) {
+			
 			//signed_term -> PLUSMINUS term
 			boolean positive = lookahead.sequence.equals("+");
 			nextToken();
@@ -80,7 +96,12 @@ public class Parser {
 	}
 	
 	private Expression termOp(Expression expression) {
+		
 		if(lookahead.token == Token.MULTDIV) {
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
+			
 			// term_op -> MULTIDIV factor term_op
 			MultiplicationExpression prod;
 			
@@ -116,9 +137,13 @@ public class Parser {
 		}
 	}
 	
-	private Expression factorOp(Expression expression) {
+	private Expression factorOp(Expression expression) {	
 		// factor_op -> RAISED factor
 		if(lookahead.token == Token.RAISED) {
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
+			
 			nextToken();
 			Expression exponent = signedFactor();
 			return new ExponentExpression(expression, exponent);
@@ -137,7 +162,10 @@ public class Parser {
 		if(lookahead.token == Token.DICE_ADV) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+dl[1-9]+
 
-			Expression expr = new DiceRollAdvExpression(lookahead.sequence);
+			DiceRollAdvExpression dice_roll_expr = new DiceRollAdvExpression(lookahead.sequence);
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(dice_roll_expr.getDiceRollOutput());
+			Expression expr = dice_roll_expr;
 			
 			nextToken();
 			return expr;
@@ -146,7 +174,10 @@ public class Parser {
 		} else if(lookahead.token == Token.DICE_DISADV) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+dh[1-9]+
 			
-			Expression expr = new DiceRollDisadvExpression(lookahead.sequence);
+			DiceRollDisadvExpression dice_roll_expr = new DiceRollDisadvExpression(lookahead.sequence);
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(dice_roll_expr.getDiceRollOutput());		
+			Expression expr = dice_roll_expr;
 			
 			nextToken();
 			return expr;
@@ -155,16 +186,26 @@ public class Parser {
 		} else if(lookahead.token == Token.DICE) {
 			// Evaluates expressions of the form: [0-9]+d[0-9]+
 			
-			Expression expr = new DiceRollExpression(lookahead.sequence);
+			DiceRollExpression dice_roll_expr = new DiceRollExpression(lookahead.sequence);
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(dice_roll_expr.getDiceRollOutput());		
+			Expression expr = dice_roll_expr;
 			
 			nextToken();
 			return expr;
 			
 			
 		} else if(lookahead.token == Token.OPEN_BRACKET) {
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
+			
 			// argument -> OPEN_BRACKET sum CLOSE_BRACKET
 			nextToken();
 			Expression expr = expression();
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
 			
 			if(lookahead.token != Token.CLOSE_BRACKET)
 				throw new RuntimeException("Closing brackets expected "+lookahead.sequence+" is found instead");
@@ -179,6 +220,10 @@ public class Parser {
 	
 	private Expression value() {
 		if(lookahead.token == Token.NUMBER) {
+			
+			// ADDING TO THE OUTPUT STRING
+			output_string.add(lookahead.sequence);
+			
 			// argument -> NUMBER
 			Expression expr = new ConstantExpression(lookahead.sequence);
 			nextToken();

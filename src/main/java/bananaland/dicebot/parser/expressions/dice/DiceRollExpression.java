@@ -8,10 +8,14 @@ import bananaland.dicebot.parser.expressions.SequenceExpression;
 public class DiceRollExpression extends SequenceExpression {
 
 	private String dice_sequence;
+	private String dice_roll_output;
+	private int sum;
 
 	public DiceRollExpression(String dice_sequence) {
 		super();
 		this.dice_sequence = dice_sequence;
+		dice_roll_output = "";
+		sum = eval();
 	}
 
 	@Override
@@ -22,9 +26,10 @@ public class DiceRollExpression extends SequenceExpression {
 
 	@Override
 	public double getValue() {
-
-		// Naive implementation code:
-
+		return sum;
+	}
+	
+	public int eval() {
 		Random rng = new Random();
 
 		String[] dice_values = dice_sequence.split("d");
@@ -38,15 +43,18 @@ public class DiceRollExpression extends SequenceExpression {
 		for (int i = 0; i < dice_count; i++) {
 			dice_rolls[i] = rng.nextInt(dice_type) + 1;
 		}
-
+		
 		for (int i = 0; i < dice_count; i++) {
-			System.out.print("["+dice_rolls[i]+"]");
+			dice_roll_output +="["+dice_rolls[i]+"]";
 			dice_sum += dice_rolls[i];
 		}
 		
-		System.out.println();
-
+		
 		return dice_sum;
+	}
+	
+	public String getDiceRollOutput() {
+		return dice_roll_output;
 	}
 
 }
