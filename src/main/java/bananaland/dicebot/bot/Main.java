@@ -12,15 +12,14 @@ import bananaland.dicebot.tokenizer.Tokenizer;
 public class Main {
     public static void main(String[] args) throws LoginException {
 
-    	/*
+    	
         JDABuilder builder = JDABuilder.createDefault(Secret.TOKEN);
         Bot bot = new Bot();
         builder.addEventListeners(bot);
         builder.setActivity(Activity.playing("Type !roll <dice expression>"));
         builder.build();
-        */
     	
-    	
+    	/*
     	String inp = "1+2d8+3-5d4^2+13+(4d6dl1*2)+2d10dh1";
     	
     	Tokenizer t = new Tokenizer();
@@ -30,6 +29,6 @@ public class Main {
     	Expression e = p.parse(t.getTokens());
     	
     	System.out.println(p.getOutput_string() + " =  " + (int) e.getValue());
-    	
+    	*/
     }
 }
