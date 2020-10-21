@@ -14,6 +14,9 @@ public class Bot extends ListenerAdapter {
         if (content.trim().startsWith("!roll")) {
             MessageChannel channel = event.getChannel();
             // TODO: Parse `content` and send a message with the dice expression rolled.
+            
+            
+            
             channel.sendMessage("Hello World!").queue();
         }
     }

@@ -37,7 +37,7 @@ public class DiceRollDisadvExpression extends SequenceExpression {
 		int dice_sum = 0;
 
 		for (int i = 0; i < dice_count; i++) {
-			dice_rolls[i] = rng.nextInt(dice_type);
+			dice_rolls[i] = rng.nextInt(dice_type) + 1;
 		}
 		
 		Arrays.sort(dice_rolls);
