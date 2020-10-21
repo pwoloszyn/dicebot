@@ -2,5 +2,5 @@ package bananaland.dicebot.bot;
 
 public final class Secret {
     //API token for the DiceBot
-    public static final String TOKEN = "NzQxNjY0NzIzNTgxMjcyMTAz.Xy63GQ.cusmpq2s0UA2yp6GyCU6NcJKj2k";
+    public static final String TOKEN = "nO_XalcJ7_Q4UIg_t-KN9b4osJ1WlPeS";
 }
