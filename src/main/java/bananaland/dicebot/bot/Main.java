@@ -13,6 +13,7 @@ public class Main {
     public static void main(String[] args) throws LoginException {
 
     	
+    	
         JDABuilder builder = JDABuilder.createDefault(Secret.TOKEN);
         Bot bot = new Bot();
         builder.addEventListeners(bot);
@@ -20,15 +21,16 @@ public class Main {
         builder.build();
     	
     	/*
-    	String inp = "1+2d8+3-5d4^2+13+(4d6dl1*2)+2d10dh1";
+    	String inp = "!roll       1d6 + 1";
     	
     	Tokenizer t = new Tokenizer();
-    	t.tokenize(inp.replace(" ", ""));
+    	t.tokenize(inp.substring(5).replace(" ", ""));
     	
     	Parser p = new Parser();
     	Expression e = p.parse(t.getTokens());
     	
     	System.out.println(p.getOutput_string() + " =  " + (int) e.getValue());
     	*/
+    	
     }
 }

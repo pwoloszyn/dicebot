@@ -27,7 +27,7 @@ public class Bot extends ListenerAdapter {
         if (content.trim().startsWith("!roll")) {
             MessageChannel channel = event.getChannel();
             
-            if(!tokenizer.tokenize(content.replace(" ", "")))
+            if(!tokenizer.tokenize(content.substring(5).replace(" ", "")))
             	channel.sendMessage("Unexpected character is input").queue();
             
             else {
