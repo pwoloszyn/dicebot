@@ -6,8 +6,6 @@ import net.dv8tion.jda.api.entities.Activity;
 import javax.security.auth.login.LoginException;
 
 import bananaland.dicebot.parser.Parser;
-import bananaland.dicebot.parser.expressions.Expression;
-import bananaland.dicebot.tokenizer.Tokenizer;
 
 public class Main {
     public static void main(String[] args) throws LoginException {
