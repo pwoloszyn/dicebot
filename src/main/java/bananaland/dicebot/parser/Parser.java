@@ -1,238 +1,115 @@
 package bananaland.dicebot.parser;
 
-import java.text.ParseException;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Stack;
 
-import bananaland.dicebot.parser.expressions.*;
-import bananaland.dicebot.parser.expressions.dice.*;
-import bananaland.dicebot.tokenizer.Token;
+import bananaland.dicebot.parser.util.Token;
+import bananaland.dicebot.parser.util.TokenType;
 
 public class Parser {
-	LinkedList<Token> tokens;
-	Token lookahead;
-	private LinkedList<String> output_string;
-	
-	public String getOutput_string() {
-		StringBuilder sb = new StringBuilder();
-		for(String s : output_string)
-			sb.append(s + " ");
-		return sb.toString();
+
+	private Stack<Token> stack;
+	private LinkedList<Token> token_list;
+	private Token token;
+	private int result;
+	private int current_highest_op;
+
+	public Parser() {
+		stack = new Stack<Token>();
+		current_highest_op = 0;
+		result = 0;
 	}
 
-	public Expression parse(LinkedList<Token> tokens) {
-		this.tokens = (LinkedList<Token>) tokens.clone();
-		lookahead = this.tokens.getFirst();
+	public void parse(LinkedList<Token> token_list) {
 		
-		output_string = new LinkedList<String>();
+		System.out.println("PARSER CALLED, token list size: " + token_list.size());
 		
-		Expression expr = expression();
+		if(token_list.size() < 2) {
+			result = Integer.parseInt(token_list.pop().getToken());
+			return;
+		}
 		
-		if(lookahead.token != Token.EPSILON)
-			throw new RuntimeException("Unexpected symbol "+lookahead.sequence+" is found");
-		
-		return expr;
-	}
-	
-	private void nextToken() {
-		tokens.pop();
-		// At the end of the input we return an epsilon token
-		if(tokens.isEmpty())
-			lookahead = new Token(Token.EPSILON, "");
-		else
-			lookahead = tokens.getFirst();
-	}
-	
-	private Expression expression() {
-		// Expression -> signed_term sum_op
-		Expression expr = signedTerm();
-		return sumOp(expr);
-	}
-	
-	private Expression sumOp(Expression expr) {
-		if(lookahead.token == Token.PLUSMINUS) {
+		this.token_list = (LinkedList<Token>) token_list.clone();
+		while (!this.token_list.isEmpty()) {		
+			token = this.token_list.pop();
 			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
+			System.out.println("Parser log: "+token.getToken());
 			
-			// sum_op -> PLUSMINUS
-			AdditionExpression sum;
-			if(expr.getType() == Expression.ADDITION) {
-				sum = (AdditionExpression) expr;
-			}else {
-				sum = new AdditionExpression(expr, true);
+			// If the token is a open bracket
+			if (token.getToken_id() == TokenType.LEFTBRACK.getValue()) {
+				LinkedList<Token> inner_token_list = new LinkedList<Token>();		
+				int left_bracket = 1;
+				int right_bracket = 0;	
+				// Recursively parse the contents of the brackets
+				while(true) {
+					token = this.token_list.pop();
+					if(token.getToken_id() == TokenType.LEFTBRACK.getValue())
+						left_bracket++;
+					else if(token.getToken_id() == TokenType.RIGHTBRACK.getValue())
+						right_bracket++;
+					if(left_bracket == right_bracket)
+						break;
+					inner_token_list.add(token);
+				}
+				
+				Parser inner_parser = new Parser();
+				inner_parser.parse(inner_token_list);
+				
+				stack.push(new Token(TokenType.CONSTANT.getValue(), inner_parser.result+""));
+				
+			// Perform operations in order of operation
+			} else if (token.getToken_id() < current_highest_op) {
+				stack.push(new Token(TokenType.CONSTANT.getValue(), runEval()+""));
+				stack.push(token);
+				current_highest_op = 0;
+			// If the token is a constant
+			} else {
+				stack.push(token);
+				if (token.getToken_id() <= TokenType.EXPONENT.getValue() && token.getToken_id() > current_highest_op)
+					current_highest_op = token.getToken_id();
 			}
-			boolean positive = lookahead.sequence.equals("+");
-			nextToken();
-			Expression t = term();
-			sum.add(t, positive);
-			return sumOp(sum);
-		} else {
-			//sum_op -> EPSILON
-			return expr;
 		}
-	}
-	
-	private Expression signedTerm() {
-		if(lookahead.token == Token.PLUSMINUS) {
-			
-			//signed_term -> PLUSMINUS term
-			boolean positive = lookahead.sequence.equals("+");
-			nextToken();
-			Expression t = term();
-			if(positive)
-				return t;
-			else
-				return new AdditionExpression(t, false);
-		} else {
-			// signed_term -> term
-			return term();
-		}
-	}
-	
-	private Expression term() {
-		// term -> factor term_op
-		Expression f = factor();
-		return termOp(f);
-	}
-	
-	private Expression termOp(Expression expression) {
-		
-		if(lookahead.token == Token.MULTDIV) {
-			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
-			
-			// term_op -> MULTIDIV factor term_op
-			MultiplicationExpression prod;
-			
-			if(expression.getType() == Expression.MULTIPLICATION)
-				prod = (MultiplicationExpression) expression;
-			else
-				prod = new MultiplicationExpression(expression, true);
-			
-			boolean positive = lookahead.sequence.equals("*");
-			nextToken();
-			Expression f = signedFactor();
-			prod.add(f, positive);
-			return termOp(prod);
-		} else {
-			// term_op -> EPSILON
-			return expression;
-		}
-	}
-	
-	private Expression signedFactor() {
-		if(lookahead.token == Token.PLUSMINUS) {
-			// signed_factor -> PLUSMINUS factor
-			boolean positive = lookahead.sequence.equals("+");
-			nextToken();
-			Expression t = factor();
-			if(positive)
-				return t;
-			else
-				return new AdditionExpression(t, false);
-		} else {
-			// signed_factor -> factor
-			return factor();
-		}
-	}
-	
-	private Expression factorOp(Expression expression) {	
-		// factor_op -> RAISED factor
-		if(lookahead.token == Token.RAISED) {
-			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
-			
-			nextToken();
-			Expression exponent = signedFactor();
-			return new ExponentExpression(expression, exponent);
-		}
-		// factor_op -> EPSILON
-		return expression;
-	}
-	
-	private Expression factor() {
-		// factor -> argument factor_op
-		Expression a = argument();
-		return factorOp(a);
-	}
-	
-	private Expression argument() {
-		if(lookahead.token == Token.DICE_ADV) {
-			// Evaluates expressions of the form: [0-9]+d[0-9]+dl[1-9]+
+		// Perform any operations remaining on the stack
+		result = runEval();
 
-			DiceRollAdvExpression dice_roll_expr = new DiceRollAdvExpression(lookahead.sequence);
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(dice_roll_expr.getDiceRollOutput());
-			Expression expr = dice_roll_expr;
-			
-			nextToken();
-			return expr;
-			
-			
-		} else if(lookahead.token == Token.DICE_DISADV) {
-			// Evaluates expressions of the form: [0-9]+d[0-9]+dh[1-9]+
-			
-			DiceRollDisadvExpression dice_roll_expr = new DiceRollDisadvExpression(lookahead.sequence);
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(dice_roll_expr.getDiceRollOutput());		
-			Expression expr = dice_roll_expr;
-			
-			nextToken();
-			return expr;
-			
-			
-		} else if(lookahead.token == Token.DICE) {
-			// Evaluates expressions of the form: [0-9]+d[0-9]+
-			
-			DiceRollExpression dice_roll_expr = new DiceRollExpression(lookahead.sequence);
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(dice_roll_expr.getDiceRollOutput());		
-			Expression expr = dice_roll_expr;
-			
-			nextToken();
-			return expr;
-			
-			
-		} else if(lookahead.token == Token.OPEN_BRACKET) {
-			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
-			
-			// argument -> OPEN_BRACKET sum CLOSE_BRACKET
-			nextToken();
-			Expression expr = expression();
-			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
-			
-			if(lookahead.token != Token.CLOSE_BRACKET)
-				throw new RuntimeException("Closing brackets expected "+lookahead.sequence+" is found instead");
-					
-			nextToken();
-			return expr;
+	}
+
+	// Goes through the stack applying the evaluation method on the contents
+	private int runEval() {
+		int eval = eval();
+		while (!stack.isEmpty()) {
+			stack.push(new Token(TokenType.CONSTANT.getValue(), eval + ""));
+			eval = eval();
+		}
+		return eval;
+	}
+
+	// Performs arithmetic operations on the 3 top most stack elements, assuming there are 3, otherwise just do 1
+	private int eval() {
+		
+		if(stack.size() == 1)
+			return Integer.parseInt(stack.pop().getToken());
+		
+		int rhs = Integer.parseInt(stack.pop().getToken());
+		String op = stack.pop().getToken();
+		int lhs = Integer.parseInt(stack.pop().getToken());
+
+		if (op.equals("+")) {
+			return lhs + rhs;
+		} else if (op.equals("-")) {
+			return lhs - rhs;
+		} else if (op.equals("/")) {
+			return lhs / rhs;
+		} else if (op.equals("*")) {
+			return lhs * rhs;
 		} else {
-			// argument -> value
-			return value();
+			return (int) Math.pow(lhs, rhs);
 		}
 	}
-	
-	private Expression value() {
-		if(lookahead.token == Token.NUMBER) {
-			
-			// ADDING TO THE OUTPUT STRING
-			output_string.add(lookahead.sequence);
-			
-			// argument -> NUMBER
-			Expression expr = new ConstantExpression(lookahead.sequence);
-			nextToken();
-			return expr;
-		} else {
-			if(lookahead.token == Token.EPSILON)
-				throw new RuntimeException("Unexpected end of input");
-			throw new RuntimeException("Unexpected symbol "+lookahead.sequence+" is found");
-		}
+
+	public int getResult() {
+		return result;
 	}
-	
+
 }
