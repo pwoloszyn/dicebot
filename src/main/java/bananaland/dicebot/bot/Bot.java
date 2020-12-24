@@ -17,22 +17,27 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class Bot extends ListenerAdapter {
-	
-	public Bot() {}
+	private String commandString;
+
+	public Bot(String commandString) {
+		this.commandString = commandString;
+	}
 
 	@Override
     public void onMessageReceived(MessageReceivedEvent event) {
         Message message = event.getMessage();
         String content = message.getContentRaw();
-        if (content.trim().startsWith("!test")) {
-        	
-        	// Logging
-        	System.out.println("Input: "+content);
-        	
-        	MessageChannel channel = event.getChannel();
-        	
+        if (content.trim().startsWith(commandString)) {
+			// Logging
+			System.out.println("Input: " + content);
+			MessageChannel channel = event.getChannel();
+
         	try {
-        		channel.sendMessage(DiceInterpreter.interpret(content.substring(5))).queue();
+				if (content.trim().equals("!test icles")) {
+					channel.sendMessage("Hehe... balls...").queue();
+				} else {
+					channel.sendMessage(DiceInterpreter.interpret(content.substring(5))).queue();
+				}
         	} catch (RuntimeException e) {
         		channel.sendMessage("Incorrect input").queue();
         	}
